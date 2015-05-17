@@ -19,6 +19,7 @@ public class MainForm extends JFrame
     {
         super("RelationshipMap");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
 
         Relationship.NewRelationship("Roomates", Color.red, 1);
         Relationship.NewRelationship("Friends", Color.GREEN, 2);
@@ -49,6 +50,8 @@ public class MainForm extends JFrame
             }
         });
 
+        add(toolBar, BorderLayout.NORTH);
+
         DragableMap mapPanel = new DragableMap();
         Dimension d = new Dimension(200, 200);
         mapPanel.setMinimumSize(d);
@@ -57,6 +60,7 @@ public class MainForm extends JFrame
         mapPanel.addComponent(jg);
         mapPanel.addComponent(et);
         mapPanel.setBounds(0, 0, 200, 200);
-        add(mapPanel);
+
+        add(mapPanel, BorderLayout.SOUTH);
     }
 }
