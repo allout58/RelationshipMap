@@ -2,6 +2,7 @@
 package allout58.util.RelationshipMap.map;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,6 +69,10 @@ public class Relationship
 
     public void render(Graphics2D g, Node node1, Node node2)
     {
-        //Line2D line = new Line2D.Double();
+        Line2D line = new Line2D.Double(node1.getX() + node1.getWidth() / 2, node1.getY() + node1.getHeight() / 2, node2.getX() + node2.getWidth() / 2, node2.getY() + node2.getHeight() / 2);//new Line2D.Double((node1.getX() + node1.getWidth()) / 2, (node1.getY() + node1.getHeight()) / 2, (node2.getX() + node2.getWidth()) / 2, (node2.getY() + node2.getHeight()) / 2);
+        Color oc = g.getColor();
+        g.setColor(color);
+        g.draw(line);
+        g.setColor(oc);
     }
 }

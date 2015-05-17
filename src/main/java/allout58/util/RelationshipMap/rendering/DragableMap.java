@@ -1,6 +1,3 @@
-/**
- * @author jthollo
- */
 package allout58.util.RelationshipMap.rendering;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +13,9 @@ import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author alllout58
+ */
 public class DragableMap extends JPanel
 {
     private static Logger logger = LogManager.getLogger("DragableMap");
@@ -103,55 +103,49 @@ public class DragableMap extends JPanel
 
     class MouseListners extends MouseAdapter
     {
-        int currButton = MouseEvent.NOBUTTON;
-        int origX = -42;//Hurray for magic constants!
-        int origY = -42;
-
-        @Override
-        public void mousePressed(MouseEvent e)
-        {
-            currButton = e.getButton();
-        }
+        private static final int MAGIC_ORIG = -42;
+        private static final int SCROLL_SCALE = 5;
+        int origX = MAGIC_ORIG;
+        int origY = MAGIC_ORIG;
 
         @Override
         public void mouseReleased(MouseEvent e)
         {
-            currButton = e.getButton();
-            origX = origY = -42;
+            origX = origY = MAGIC_ORIG;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e)
+        {
+            for (IMapComponent comp : componentList)
+            {
+                double cx = (e.getX() - translate.getX()) / scale;
+                double cy = (e.getY() - translate.getY()) / scale;
+                if (comp.contains(cx, cy))
+                {
+                    comp.toggleSelect();
+                    repaint();
+                }
+            }
         }
 
         @Override
         public void mouseWheelMoved(MouseWheelEvent e)
         {
-            scale += e.getPreciseWheelRotation() / 5;
+            scale += e.getPreciseWheelRotation() / SCROLL_SCALE;
             repaint();
         }
 
         @Override
         public void mouseDragged(MouseEvent e)
         {
-            if (currButton != MouseEvent.BUTTON1)
-                return;
-            if (origX != -42 && origY != -42)
+            if (origX != MAGIC_ORIG && origY != MAGIC_ORIG)
             {
-                //                logger.info("Dragging: (" + e.getX() + "," + e.getY() + ") DELTA (" + (origX - e.getX()) + "," + (origY - e.getY()) + ") -" + e.getButton() + "VS" + currButton);
                 translate.translate(e.getX() - origX, e.getY() - origY);
                 repaint();
             }
             origX = e.getX();
             origY = e.getY();
         }
-
-        //        @Override
-        //        public void mouseMoved(MouseEvent e)
-        //        {
-        //            logger.info("Moving: "+isDragging+" ("+e.getX()+","+e.getY()+")-"+e.getButton());
-        //            if (isDragging)
-        //            {
-        //                translate.translate(origX - e.getX(), origY - e.getY());
-        //            }
-        //            origX = e.getX();
-        //            origY = e.getY();
-        //        }
     }
 }
