@@ -18,13 +18,16 @@ import java.util.List;
  */
 public class DragableMap extends JPanel
 {
-    private static Logger logger = LogManager.getLogger("DragableMap");
+    private static final Logger logger = LogManager.getLogger("DragableMap");
+    private static final int KEY_TRANSLATE = 3;
+    private static final double KEY_SCALE = 0.05;
 
     List<IMapComponent> componentList = new ArrayList<>();
 
-    double scale = 1.0;
-    //    int width, height;
-    Point translate = new Point(0, 0);
+    private double scale = 1.0;
+    private Point translate = new Point(0, 0);
+    private Point startSelect = null;
+    private Point stopSelect = null;
 
     public DragableMap()
     {
@@ -36,32 +39,32 @@ public class DragableMap extends JPanel
             {
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT)
                 {
-                    translate.translate(1, 0);
+                    translate.translate(KEY_TRANSLATE, 0);
                     repaint();
                 }
                 else if (e.getKeyCode() == KeyEvent.VK_LEFT)
                 {
-                    translate.translate(-1, 0);
+                    translate.translate(-KEY_TRANSLATE, 0);
                     repaint();
                 }
                 else if (e.getKeyCode() == KeyEvent.VK_UP)
                 {
-                    translate.translate(0, -1);
+                    translate.translate(0, -KEY_TRANSLATE);
                     repaint();
                 }
                 else if (e.getKeyCode() == KeyEvent.VK_DOWN)
                 {
-                    translate.translate(0, 1);
+                    translate.translate(0, KEY_TRANSLATE);
                     repaint();
                 }
                 else if (e.getKeyCode() == KeyEvent.VK_PAGE_UP)
                 {
-                    scale -= 0.1;
+                    scale -= KEY_SCALE;
                     repaint();
                 }
                 else if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
                 {
-                    scale += 0.1;
+                    scale += KEY_SCALE;
                     repaint();
                 }
             }
@@ -112,6 +115,7 @@ public class DragableMap extends JPanel
         public void mouseReleased(MouseEvent e)
         {
             origX = origY = MAGIC_ORIG;
+            startSelect = stopSelect = null;
         }
 
         @Override
@@ -121,9 +125,10 @@ public class DragableMap extends JPanel
             {
                 double cx = (e.getX() - translate.getX()) / scale;
                 double cy = (e.getY() - translate.getY()) / scale;
-                if (comp.contains(cx, cy))
+                Shape shape = comp.getBounds();
+                if (shape.contains(cx, cy))
                 {
-                    comp.toggleSelect();
+                    comp.toggleSelected();
                     repaint();
                 }
             }
@@ -139,13 +144,27 @@ public class DragableMap extends JPanel
         @Override
         public void mouseDragged(MouseEvent e)
         {
-            if (origX != MAGIC_ORIG && origY != MAGIC_ORIG)
+            if (e.isShiftDown())
             {
-                translate.translate(e.getX() - origX, e.getY() - origY);
-                repaint();
+                if (startSelect == null)
+                {
+                    startSelect = new Point(e.getPoint());
+                }
+                if (stopSelect == null)
+                    stopSelect = new Point(0, 0);
+                stopSelect.x = e.getX();
+                stopSelect.y = e.getY();
             }
-            origX = e.getX();
-            origY = e.getY();
+            else
+            {
+                if (origX != MAGIC_ORIG && origY != MAGIC_ORIG)
+                {
+                    translate.translate(e.getX() - origX, e.getY() - origY);
+                    repaint();
+                }
+                origX = e.getX();
+                origY = e.getY();
+            }
         }
     }
 }

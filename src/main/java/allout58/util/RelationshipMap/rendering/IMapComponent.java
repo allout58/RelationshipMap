@@ -7,9 +7,13 @@ import java.awt.*;
 
 public interface IMapComponent
 {
-    double getX();
+    int getX();
 
-    double getY();
+    void setX(int x);
+
+    int getY();
+
+    void setY(int y);
 
     int getWidth();
 
@@ -17,7 +21,11 @@ public interface IMapComponent
 
     void render(DragableMap map, Graphics2D g);
 
-    boolean contains(double x, double y);
+    Shape getBounds();
 
-    void toggleSelect();
+    void toggleSelected();
+
+    boolean getSelected();
+
+    void setSelected(boolean selected);
 }

@@ -24,6 +24,7 @@ public class Node implements Serializable, IMapComponent
     private String data = "";
     private int width = -1;
     private int height = -1;
+    private RoundRectangle2D bounds = null;
     private boolean selected = false;
 
     public Node(String data)
@@ -53,15 +54,27 @@ public class Node implements Serializable, IMapComponent
     }
 
     @Override
-    public double getX()
+    public int getX()
     {
-        return location.getX();
+        return location.x;
     }
 
     @Override
-    public double getY()
+    public void setX(int x)
     {
-        return location.getY();
+        this.location.x = x;
+    }
+
+    @Override
+    public int getY()
+    {
+        return location.y;
+    }
+
+    @Override
+    public void setY(int y)
+    {
+        this.location.y = y;
     }
 
     @Override
@@ -101,27 +114,43 @@ public class Node implements Serializable, IMapComponent
         }
         prerendered.clear();
 
-        RoundRectangle2D rect = new RoundRectangle2D.Double(location.getX(), location.getY(), width, height, 5, 5);
+        if (bounds == null)
+            bounds = new RoundRectangle2D.Double(location.getX(), location.getY(), width, height, 5, 5);
+
         Color oc = g.getColor();
-        g.setColor(selected ? Color.red : Color.white);
-        g.draw(rect);
+        Stroke os = g.getStroke();
+        g.setStroke(new BasicStroke(3f));
+        g.setColor(selected ? Color.red : Color.black);
+        g.draw(bounds);
+        g.setStroke(os);
         g.setColor(Color.blue);
-        g.fill(rect);
+        g.fill(bounds);
         g.setColor(Color.white);
         g.drawString(data, (float) location.getX() + 2, (float) location.getY() + height - 4);
         g.setColor(oc);
     }
 
     @Override
-    public boolean contains(double x, double y)
+    public Shape getBounds()
     {
-        RoundRectangle2D rect = new RoundRectangle2D.Double(location.getX(), location.getY(), width, height, 5, 5);
-        return rect.contains(x, y);
+        return bounds;
     }
 
     @Override
-    public void toggleSelect()
+    public void toggleSelected()
     {
         this.selected = !this.selected;
+    }
+
+    @Override
+    public boolean getSelected()
+    {
+        return selected;
+    }
+
+    @Override
+    public void setSelected(boolean selected)
+    {
+        this.selected = selected;
     }
 }
